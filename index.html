@@ -1,0 +1,1984 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AIM TRAINER — Тренировка аима</title>
+<link rel="stylesheet" href="https://cdn.fontsource.org/npm/@fontsource/inter@5.0.16/index.css">
+<link rel="stylesheet" href="https://cdn.fontsource.org/npm/@fontsource/orbitron@5.0.18/index.css">
+<link rel="stylesheet" href="https://cdn.fontsource.org/npm/@fontsource/space-grotesk@5.0.17/index.css">
+<style>
+  :root {
+    --bg: #0a0420;
+    --bg-elev: rgba(30, 15, 60, 0.6);
+    --bg-elev-2: rgba(50, 25, 90, 0.7);
+    --border: rgba(255, 0, 200, 0.3);
+    --border-soft: rgba(255, 0, 200, 0.15);
+    --text: #ffffff;
+    --text-muted: #e0b8ff;
+    --text-dim: #9a78c8;
+    --pink: #ff2d95;
+    --magenta: #ff00ff;
+    --cyan: #00f0ff;
+    --yellow: #ffe600;
+    --orange: #ff6b00;
+    --purple: #a855f7;
+    --accent-easy: #00ff88;
+    --accent-medium: #ffe600;
+    --accent-hard: #ff2d95;
+    --accent-arcade: #a855f7;
+    --coin: #ffe600;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body {
+    font-family: 'Inter', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    overflow-x: hidden;
+    min-height: 100vh;
+  }
+
+  body {
+    background:
+      radial-gradient(ellipse at 50% 100%, rgba(255, 45, 149, 0.35), transparent 55%),
+      radial-gradient(ellipse at 50% 0%, rgba(168, 85, 247, 0.25), transparent 60%),
+      radial-gradient(ellipse at 0% 50%, rgba(0, 240, 255, 0.15), transparent 50%),
+      radial-gradient(ellipse at 100% 50%, rgba(255, 0, 255, 0.15), transparent 50%),
+      linear-gradient(180deg, #0a0420 0%, #1a0a3a 50%, #2a0845 100%);
+    position: relative;
+  }
+
+  /* Synthwave grid floor */
+  body::before {
+    content: '';
+    position: fixed;
+    bottom: 0;
+    left: -50%;
+    right: -50%;
+    height: 60vh;
+    background-image:
+      linear-gradient(rgba(255, 0, 200, 0.5) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 0, 200, 0.5) 1px, transparent 1px);
+    background-size: 60px 60px;
+    transform: perspective(500px) rotateX(60deg);
+    transform-origin: bottom;
+    animation: gridScroll 3s linear infinite;
+    pointer-events: none;
+    z-index: 0;
+    mask-image: linear-gradient(to top, black 0%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to top, black 0%, transparent 100%);
+  }
+
+  @keyframes gridScroll {
+    from { background-position: 0 0; }
+    to { background-position: 0 60px; }
+  }
+
+  /* Sun */
+  body::after {
+    content: '';
+    position: fixed;
+    bottom: 15%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 500px;
+    height: 500px;
+    border-radius: 50%;
+    background: linear-gradient(180deg, #ffe600 0%, #ff6b00 40%, #ff2d95 70%, #a855f7 100%);
+    box-shadow: 0 0 120px rgba(255, 107, 0, 0.6), 0 0 200px rgba(255, 45, 149, 0.4);
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.5;
+    mask-image: repeating-linear-gradient(
+      to bottom,
+      black 0px,
+      black 8px,
+      transparent 8px,
+      transparent 14px
+    );
+    -webkit-mask-image: repeating-linear-gradient(
+      to bottom,
+      black 0px,
+      black 8px,
+      transparent 8px,
+      transparent 14px
+    );
+  }
+
+  /* Stars */
+  .stars {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+  }
+
+  .star {
+    position: absolute;
+    width: 2px;
+    height: 2px;
+    background: #fff;
+    border-radius: 50%;
+    animation: twinkle 3s ease-in-out infinite;
+  }
+
+  @keyframes twinkle {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 1; }
+  }
+
+  .container {
+    position: relative;
+    z-index: 1;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 20px;
+  }
+
+  /* MENU */
+  .menu {
+    text-align: center;
+    width: 100%;
+    max-width: 1200px;
+    animation: fadeIn 0.6s ease;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 12px;
+  }
+
+  .logo-mark {
+    width: 52px;
+    height: 52px;
+    border: 3px solid var(--cyan);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    background: linear-gradient(135deg, rgba(255, 45, 149, 0.3), rgba(0, 240, 255, 0.3));
+    box-shadow: 0 0 20px rgba(0, 240, 255, 0.6), inset 0 0 20px rgba(255, 45, 149, 0.3);
+    animation: logoPulse 2s ease-in-out infinite;
+  }
+
+  @keyframes logoPulse {
+    0%, 100% { box-shadow: 0 0 20px rgba(0, 240, 255, 0.6), inset 0 0 20px rgba(255, 45, 149, 0.3); }
+    50% { box-shadow: 0 0 30px rgba(255, 45, 149, 0.8), inset 0 0 25px rgba(0, 240, 255, 0.5); }
+  }
+
+  .logo-mark::before {
+    content: '';
+    width: 18px;
+    height: 18px;
+    border: 2.5px solid var(--cyan);
+    border-radius: 50%;
+    box-shadow: 0 0 10px var(--cyan);
+  }
+
+  .logo-mark::after {
+    content: '';
+    position: absolute;
+    width: 5px;
+    height: 5px;
+    background: var(--pink);
+    border-radius: 50%;
+    box-shadow: 0 0 8px var(--pink);
+  }
+
+  .title {
+    font-family: 'Orbitron', sans-serif;
+    font-size: clamp(2.2rem, 6vw, 3.8rem);
+    font-weight: 900;
+    letter-spacing: 0.05em;
+    background: linear-gradient(180deg, #ffe600 0%, #ff6b00 30%, #ff2d95 60%, #a855f7 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 0 20px rgba(255, 45, 149, 0.6));
+    text-transform: uppercase;
+    line-height: 1;
+  }
+
+  .subtitle {
+    font-size: 0.95rem;
+    color: var(--cyan);
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    margin-bottom: 32px;
+    font-weight: 500;
+    text-shadow: 0 0 10px var(--cyan);
+  }
+
+  /* Coins */
+  .coins-display {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    background: linear-gradient(135deg, rgba(255, 230, 0, 0.15), rgba(255, 107, 0, 0.1));
+    border: 2px solid var(--coin);
+    padding: 12px 24px;
+    border-radius: 100px;
+    margin-bottom: 32px;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--coin);
+    box-shadow: 0 0 25px rgba(255, 230, 0, 0.4), inset 0 0 15px rgba(255, 230, 0, 0.1);
+    text-shadow: 0 0 10px var(--coin);
+  }
+
+  .coin-icon {
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: coinSpin 3s linear infinite;
+  }
+
+  @keyframes coinSpin {
+    0%, 100% { transform: rotateY(0deg); }
+    50% { transform: rotateY(180deg); }
+  }
+
+  /* Tabs */
+  .tabs {
+    display: inline-flex;
+    gap: 4px;
+    background: var(--bg-elev);
+    border: 2px solid var(--border);
+    padding: 6px;
+    border-radius: 14px;
+    margin-bottom: 40px;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+
+  .tab {
+    padding: 12px 28px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    font-family: 'Space Grotesk', sans-serif;
+  }
+
+  .tab:hover { color: var(--text); }
+
+  .tab.active {
+    background: linear-gradient(135deg, var(--pink), var(--magenta));
+    color: var(--text);
+    box-shadow: 0 0 20px rgba(255, 45, 149, 0.6), inset 0 0 10px rgba(255, 255, 255, 0.2);
+    text-shadow: 0 0 8px rgba(255, 255, 255, 0.8);
+  }
+
+  .tab-content { display: none; width: 100%; }
+  .tab-content.active { display: block; animation: fadeIn 0.4s ease; }
+
+  /* Modes */
+  .modes {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .mode-card {
+    background: var(--bg-elev);
+    border: 2px solid var(--border);
+    border-radius: 18px;
+    padding: 28px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    text-align: left;
+    position: relative;
+    overflow: hidden;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+
+  .mode-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--color), var(--color-alt, var(--color)));
+    box-shadow: 0 0 15px var(--color);
+  }
+
+  .mode-card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), var(--color-glow), transparent 50%);
+    opacity: 0;
+    transition: opacity 0.3s;
+    pointer-events: none;
+  }
+
+  .mode-card:hover {
+    transform: translateY(-8px) scale(1.02);
+    border-color: var(--color);
+    box-shadow: 0 0 40px var(--color-glow), 0 20px 60px rgba(0, 0, 0, 0.5);
+  }
+
+  .mode-card:hover::before { box-shadow: 0 0 25px var(--color); }
+  .mode-card:hover::after { opacity: 0.3; }
+
+  .mode-card.easy {
+    --color: var(--accent-easy);
+    --color-alt: var(--cyan);
+    --color-glow: rgba(0, 255, 136, 0.4);
+  }
+  .mode-card.medium {
+    --color: var(--accent-medium);
+    --color-alt: var(--orange);
+    --color-glow: rgba(255, 230, 0, 0.4);
+  }
+  .mode-card.hard {
+    --color: var(--accent-hard);
+    --color-alt: var(--magenta);
+    --color-glow: rgba(255, 45, 149, 0.4);
+  }
+  .mode-card.arcade {
+    --color: var(--accent-arcade);
+    --color-alt: var(--pink);
+    --color-glow: rgba(168, 85, 247, 0.4);
+  }
+
+  .mode-cover {
+    width: 100%;
+    height: 110px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, rgba(0, 0, 0, 0.5), rgba(255, 0, 200, 0.1));
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--border-soft);
+    overflow: hidden;
+    position: relative;
+    z-index: 1;
+  }
+
+  .mode-cover::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: 
+      radial-gradient(circle at 30% 50%, var(--color-glow), transparent 50%),
+      radial-gradient(circle at 70% 50%, rgba(0, 240, 255, 0.2), transparent 50%);
+  }
+
+  .mode-cover svg {
+    width: 70%;
+    height: 70%;
+    stroke: var(--color);
+    fill: none;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    filter: drop-shadow(0 0 10px var(--color));
+    position: relative;
+    z-index: 1;
+  }
+
+  .mode-name {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+    color: var(--text);
+    letter-spacing: 0.02em;
+    text-shadow: 0 0 10px var(--color);
+    position: relative;
+    z-index: 1;
+  }
+
+  .mode-desc {
+    font-size: 0.88rem;
+    color: var(--text-muted);
+    line-height: 1.5;
+    margin-bottom: 16px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .mode-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 14px;
+    border-top: 1px solid var(--border-soft);
+    position: relative;
+    z-index: 1;
+  }
+
+  .mode-time {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    letter-spacing: 0.05em;
+  }
+
+  .mode-reward {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.85rem;
+    color: var(--coin);
+    font-weight: 700;
+    text-shadow: 0 0 8px var(--coin);
+  }
+
+  .mode-reward svg { width: 14px; height: 14px; }
+
+  /* Shop */
+  .shop { max-width: 1100px; margin: 0 auto; }
+
+  .shop-category { margin-bottom: 48px; }
+
+  .category-title {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin-bottom: 20px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: var(--text);
+  }
+
+  .category-title::before {
+    content: '';
+    width: 5px;
+    height: 22px;
+    background: linear-gradient(180deg, var(--cyan), var(--pink));
+    border-radius: 3px;
+    box-shadow: 0 0 10px var(--cyan);
+  }
+
+  .shop-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+    gap: 14px;
+  }
+
+  .shop-item {
+    background: var(--bg-elev);
+    border: 2px solid var(--border);
+    border-radius: 14px;
+    padding: 18px 14px;
+    text-align: center;
+    transition: all 0.3s;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+
+  .shop-item::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(255, 45, 149, 0.1), rgba(0, 240, 255, 0.1));
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .shop-item:hover {
+    transform: translateY(-4px);
+    border-color: var(--cyan);
+    box-shadow: 0 0 20px rgba(0, 240, 255, 0.4);
+  }
+
+  .shop-item:hover::before { opacity: 1; }
+
+  .shop-item.owned {
+    border-color: var(--accent-easy);
+    box-shadow: 0 0 15px rgba(0, 255, 136, 0.3);
+  }
+
+  .shop-item.selected {
+    border-color: var(--yellow);
+    background: linear-gradient(135deg, rgba(255, 230, 0, 0.15), rgba(255, 107, 0, 0.1));
+    box-shadow: 0 0 25px rgba(255, 230, 0, 0.5), inset 0 0 15px rgba(255, 230, 0, 0.1);
+  }
+
+  .shop-item-icon {
+    width: 64px;
+    height: 64px;
+    margin: 0 auto 12px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, rgba(0, 0, 0, 0.5), rgba(255, 0, 200, 0.15));
+    border: 1px solid var(--border-soft);
+    overflow: hidden;
+    position: relative;
+    z-index: 1;
+  }
+
+  .shop-item-name {
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: var(--text);
+    position: relative;
+    z-index: 1;
+    font-family: 'Space Grotesk', sans-serif;
+  }
+
+  .shop-item-price {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 12px;
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid var(--border-soft);
+    border-radius: 100px;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.8rem;
+    color: var(--coin);
+    font-weight: 700;
+    position: relative;
+    z-index: 1;
+    text-shadow: 0 0 6px var(--coin);
+  }
+
+  .shop-item.owned .shop-item-price {
+    color: var(--accent-easy);
+    border-color: var(--accent-easy);
+    text-shadow: 0 0 6px var(--accent-easy);
+  }
+
+  .shop-item.selected .shop-item-price {
+    color: var(--yellow);
+    border-color: var(--yellow);
+    text-shadow: 0 0 8px var(--yellow);
+  }
+
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-6px); }
+    75% { transform: translateX(6px); }
+  }
+
+  /* GAME */
+  .game {
+    width: 100%;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    display: none;
+    z-index: 50;
+    background: var(--bg);
+  }
+
+  .game.active { display: block; }
+
+  .hud {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    padding: 20px 30px;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    z-index: 10;
+    background: linear-gradient(to bottom, rgba(10, 4, 32, 0.95), rgba(10, 4, 32, 0.5) 70%, transparent);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    flex-wrap: wrap;
+    gap: 10px;
+    border-bottom: 1px solid var(--border-soft);
+  }
+
+  .hud-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    min-width: 80px;
+  }
+
+  .hud-label {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    font-weight: 600;
+    font-family: 'Space Grotesk', sans-serif;
+  }
+
+  .hud-value {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.7rem;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: 0.02em;
+    text-shadow: 0 0 10px currentColor;
+  }
+
+  .hud-value.score { color: var(--accent-easy); }
+  .hud-value.combo { color: var(--accent-medium); }
+  .hud-value.time { color: var(--accent-hard); }
+  .hud-value.coins { color: var(--coin); }
+
+  .time-bar {
+    position: absolute;
+    top: 90px;
+    left: 30px;
+    right: 30px;
+    height: 3px;
+    background: var(--border);
+    border-radius: 2px;
+    overflow: hidden;
+    z-index: 10;
+  }
+
+  .time-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent-hard), var(--accent-medium), var(--accent-easy));
+    width: 100%;
+    transition: width 0.1s linear;
+    box-shadow: 0 0 10px var(--pink);
+  }
+
+  .play-area {
+    position: absolute;
+    inset: 0;
+    cursor: crosshair;
+    overflow: hidden;
+    background:
+      radial-gradient(ellipse at 50% 100%, rgba(255, 45, 149, 0.15), transparent 50%),
+      radial-gradient(ellipse at 50% 0%, rgba(168, 85, 247, 0.1), transparent 50%);
+  }
+
+  .target {
+    position: absolute;
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    cursor: pointer;
+    transform: translate(-50%, -50%);
+    animation: targetAppear 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+    z-index: 5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    user-select: none;
+  }
+
+  @keyframes targetAppear {
+    from { transform: translate(-50%, -50%) scale(0); opacity: 0; }
+    to { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+  }
+
+  .target-inner {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.15s;
+    box-shadow: 0 0 30px rgba(255, 45, 149, 0.6), inset 0 0 20px rgba(255, 255, 255, 0.2);
+  }
+
+  .target:hover .target-inner { transform: scale(1.1); }
+
+  .target-inner::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 30%;
+    height: 30%;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+  }
+
+  .target-inner::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 70%;
+    height: 70%;
+    border: 1.5px solid rgba(255, 255, 255, 0.4);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  .target-timer {
+    position: absolute;
+    inset: -4px;
+    border-radius: 50%;
+    pointer-events: none;
+  }
+
+  .target-timer svg {
+    width: 100%;
+    height: 100%;
+    transform: rotate(-90deg);
+  }
+
+  .target-timer circle {
+    fill: none;
+    stroke: var(--accent-easy);
+    stroke-width: 2.5;
+    stroke-linecap: round;
+    transition: stroke-dashoffset 0.1s linear, stroke 0.3s;
+    filter: drop-shadow(0 0 4px var(--accent-easy));
+  }
+
+  .target.expiring .target-timer circle { stroke: var(--accent-hard); filter: drop-shadow(0 0 6px var(--accent-hard)); }
+
+  .target.hit {
+    animation: targetHit 0.35s ease-out forwards;
+    pointer-events: none;
+  }
+
+  @keyframes targetHit {
+    0% { transform: translate(-50%, -50%) scale(1); }
+    50% { transform: translate(-50%, -50%) scale(1.4); opacity: 0.8; }
+    100% { transform: translate(-50%, -50%) scale(0); opacity: 0; }
+  }
+
+  .target.missed {
+    animation: targetMiss 0.35s ease-out forwards;
+    pointer-events: none;
+  }
+
+  @keyframes targetMiss {
+    0% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+    100% { transform: translate(-50%, -50%) scale(0.5); opacity: 0; }
+  }
+
+  /* Trail */
+  .trail-dot {
+    position: absolute;
+    pointer-events: none;
+    border-radius: 50%;
+    z-index: 3;
+    animation: trailFade 0.6s ease-out forwards;
+  }
+
+  @keyframes trailFade {
+    from { opacity: 0.8; transform: scale(1); }
+    to { opacity: 0; transform: scale(0.2); }
+  }
+
+  .float-score {
+    position: absolute;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.2rem;
+    font-weight: 700;
+    pointer-events: none;
+    animation: floatUp 0.8s ease-out forwards;
+    z-index: 20;
+    white-space: nowrap;
+    letter-spacing: 0.02em;
+    text-shadow: 0 0 10px currentColor;
+  }
+
+  .float-score.positive { color: var(--accent-easy); }
+  .float-score.negative { color: var(--accent-hard); }
+  .float-score.coins { color: var(--coin); }
+
+  @keyframes floatUp {
+    from { transform: translateY(0); opacity: 1; }
+    to { transform: translateY(-70px); opacity: 0; }
+  }
+
+  .particle {
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    pointer-events: none;
+    animation: particleFly 0.5s ease-out forwards;
+    box-shadow: 0 0 8px currentColor;
+  }
+
+  @keyframes particleFly {
+    to {
+      transform: translate(var(--tx), var(--ty)) scale(0);
+      opacity: 0;
+    }
+  }
+
+  .miss-flash {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at var(--x) var(--y), rgba(255, 45, 149, 0.3), transparent 35%);
+    pointer-events: none;
+    animation: missFlash 0.3s ease-out forwards;
+    z-index: 15;
+  }
+
+  @keyframes missFlash {
+    from { opacity: 1; }
+    to { opacity: 0; }
+  }
+
+  /* RESULT */
+  .result {
+    display: none;
+    text-align: center;
+    animation: fadeIn 0.5s ease;
+    width: 100%;
+    max-width: 900px;
+  }
+
+  .result.active { display: block; }
+
+  .result-title {
+    font-family: 'Orbitron', sans-serif;
+    font-size: clamp(1.8rem, 5vw, 3rem);
+    font-weight: 900;
+    margin-bottom: 12px;
+    letter-spacing: 0.05em;
+    background: linear-gradient(180deg, var(--yellow) 0%, var(--orange) 40%, var(--pink) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-transform: uppercase;
+    filter: drop-shadow(0 0 20px rgba(255, 45, 149, 0.6));
+  }
+
+  .result-subtitle {
+    color: var(--cyan);
+    margin-bottom: 32px;
+    font-size: 0.95rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    text-shadow: 0 0 8px var(--cyan);
+  }
+
+  .result-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 14px;
+    margin: 0 auto 32px;
+  }
+
+  .stat-card {
+    background: var(--bg-elev);
+    border: 2px solid var(--border);
+    border-radius: 14px;
+    padding: 20px 16px;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+
+  .stat-label {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    font-weight: 600;
+    font-family: 'Space Grotesk', sans-serif;
+  }
+
+  .stat-value {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: 0.02em;
+    text-shadow: 0 0 10px currentColor;
+  }
+
+  .stat-value.best { color: var(--accent-medium); }
+  .stat-value.coins { color: var(--coin); }
+
+  .result-buttons {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .btn {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 700;
+    padding: 14px 32px;
+    border-radius: 12px;
+    cursor: pointer;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    transition: all 0.3s;
+    background: var(--bg-elev);
+    color: var(--text);
+    border: 2px solid var(--border);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+
+  .btn:hover {
+    transform: translateY(-3px);
+    border-color: var(--cyan);
+    box-shadow: 0 0 20px rgba(0, 240, 255, 0.5);
+  }
+
+  .btn.primary {
+    background: linear-gradient(135deg, var(--pink), var(--magenta), var(--purple));
+    color: var(--text);
+    border: none;
+    box-shadow: 0 0 25px rgba(255, 45, 149, 0.6), inset 0 0 15px rgba(255, 255, 255, 0.2);
+    text-shadow: 0 0 8px rgba(255, 255, 255, 0.8);
+  }
+
+  .btn.primary:hover {
+    box-shadow: 0 0 40px rgba(255, 45, 149, 0.8), inset 0 0 20px rgba(255, 255, 255, 0.3);
+    transform: translateY(-3px) scale(1.03);
+  }
+
+  /* Countdown */
+  .countdown {
+    position: fixed;
+    inset: 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    background: rgba(10, 4, 32, 0.9);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+  }
+
+  .countdown.active { display: flex; }
+
+  .countdown-number {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 14rem;
+    font-weight: 900;
+    background: linear-gradient(180deg, var(--yellow) 0%, var(--orange) 40%, var(--pink) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: countPulse 1s ease-out;
+    letter-spacing: -0.05em;
+    filter: drop-shadow(0 0 40px rgba(255, 45, 149, 0.8));
+  }
+
+  @keyframes countPulse {
+    0% { transform: scale(0.5); opacity: 0; }
+    50% { transform: scale(1.1); opacity: 1; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+
+  ::-webkit-scrollbar { width: 8px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: linear-gradient(180deg, var(--pink), var(--purple)); border-radius: 4px; }
+
+  @media (max-width: 600px) {
+    .hud { padding: 15px; }
+    .hud-value { font-size: 1.2rem; }
+    .target { width: 55px; height: 55px; }
+    .modes { grid-template-columns: 1fr; }
+    .container { padding: 24px 16px; }
+    .countdown-number { font-size: 8rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="stars" id="stars"></div>
+
+<div class="container">
+  <div class="menu" id="menu">
+    <div class="logo">
+      <div class="logo-mark"></div>
+      <h1 class="title">AIM TRAINER</h1>
+    </div>
+    <p class="subtitle">Тренировка меткости</p>
+
+    <div class="coins-display">
+      <div class="coin-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+          <circle cx="12" cy="12" r="10" fill="#ffe600" stroke="#ff6b00" stroke-width="1.5"/>
+          <circle cx="12" cy="12" r="7" fill="none" stroke="#ff6b00" stroke-width="1" opacity="0.6"/>
+          <text x="12" y="16" text-anchor="middle" font-family="Orbitron" font-size="10" font-weight="900" fill="#ff6b00">¢</text>
+        </svg>
+      </div>
+      <span id="coinsDisplay">0</span>
+    </div>
+
+    <div class="tabs">
+      <div class="tab active" data-tab="modes">Режимы</div>
+      <div class="tab" data-tab="shop">Магазин</div>
+    </div>
+
+    <div class="tab-content active" id="modesTab">
+      <div class="modes">
+        <div class="mode-card easy" data-mode="easy">
+          <div class="mode-cover">
+            <svg viewBox="0 0 100 100">
+              <circle cx="50" cy="50" r="35"/>
+              <circle cx="50" cy="50" r="22"/>
+              <circle cx="50" cy="50" r="10"/>
+              <circle cx="50" cy="50" r="2" fill="currentColor" stroke="none"/>
+            </svg>
+          </div>
+          <div class="mode-name">Лёгкий</div>
+          <div class="mode-desc">Для новичков. Цель живёт 3 секунды — успеешь прицелиться.</div>
+          <div class="mode-meta">
+            <span class="mode-time">3.0 сек</span>
+            <span class="mode-reward">
+              <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"/></svg>
+              +5
+            </span>
+          </div>
+        </div>
+
+        <div class="mode-card medium" data-mode="medium">
+          <div class="mode-cover">
+            <svg viewBox="0 0 100 100">
+              <path d="M20 50 L40 50 M50 50 L70 50 M80 50 L90 50"/>
+              <path d="M30 40 L40 50 L30 60"/>
+              <path d="M60 40 L70 50 L60 60"/>
+              <circle cx="50" cy="50" r="4" fill="currentColor" stroke="none"/>
+            </svg>
+          </div>
+          <div class="mode-name">Средний</div>
+          <div class="mode-desc">Баланс скорости и точности. Цель живёт 2 секунды.</div>
+          <div class="mode-meta">
+            <span class="mode-time">2.0 сек</span>
+            <span class="mode-reward">
+              <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"/></svg>
+              +8
+            </span>
+          </div>
+        </div>
+
+        <div class="mode-card hard" data-mode="hard">
+          <div class="mode-cover">
+            <svg viewBox="0 0 100 100">
+              <path d="M55 20 L35 52 L50 52 L40 80 L65 45 L50 45 Z"/>
+            </svg>
+          </div>
+          <div class="mode-name">Сложный</div>
+          <div class="mode-desc">Только для про. Цель живёт всего 1 секунду.</div>
+          <div class="mode-meta">
+            <span class="mode-time">1.0 сек</span>
+            <span class="mode-reward">
+              <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"/></svg>
+              +12
+            </span>
+          </div>
+        </div>
+
+        <div class="mode-card arcade" data-mode="moving">
+          <div class="mode-cover">
+            <svg viewBox="0 0 100 100">
+              <circle cx="50" cy="50" r="10"/>
+              <circle cx="50" cy="50" r="2" fill="currentColor" stroke="none"/>
+              <path d="M25 50 L35 50 M65 50 L75 50 M50 25 L50 35 M50 65 L50 75" stroke-dasharray="2 3"/>
+              <path d="M30 30 L38 38 M70 30 L62 38 M30 70 L38 62 M70 70 L62 62" stroke-dasharray="2 3"/>
+            </svg>
+          </div>
+          <div class="mode-name">Убегающая цель</div>
+          <div class="mode-desc">Цель двигается по полю. Попади, пока она не скрылась.</div>
+          <div class="mode-meta">
+            <span class="mode-time">2.5 сек</span>
+            <span class="mode-reward">
+              <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"/></svg>
+              +15
+            </span>
+          </div>
+        </div>
+
+        <div class="mode-card arcade" data-mode="multi">
+          <div class="mode-cover">
+            <svg viewBox="0 0 100 100">
+              <circle cx="30" cy="40" r="10"/>
+              <circle cx="30" cy="40" r="2" fill="currentColor" stroke="none"/>
+              <circle cx="70" cy="40" r="10"/>
+              <circle cx="70" cy="40" r="2" fill="currentColor" stroke="none"/>
+              <circle cx="50" cy="70" r="10"/>
+              <circle cx="50" cy="70" r="2" fill="currentColor" stroke="none"/>
+            </svg>
+          </div>
+          <div class="mode-name">Мульти-цели</div>
+          <div class="mode-desc">Несколько целей одновременно. Успей нажать все.</div>
+          <div class="mode-meta">
+            <span class="mode-time">2.0 сек</span>
+            <span class="mode-reward">
+              <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"/></svg>
+              +10
+            </span>
+          </div>
+        </div>
+
+        <div class="mode-card arcade" data-mode="boss">
+          <div class="mode-cover">
+            <svg viewBox="0 0 100 100">
+              <circle cx="50" cy="45" r="25"/>
+              <circle cx="50" cy="45" r="15"/>
+              <circle cx="50" cy="45" r="5"/>
+              <rect x="25" y="78" width="50" height="4" rx="2"/>
+              <rect x="25" y="78" width="35" height="4" rx="2" fill="currentColor" stroke="none"/>
+            </svg>
+          </div>
+          <div class="mode-name">Босс</div>
+          <div class="mode-desc">Огромная цель с HP. Кликай быстрее, чтобы победить.</div>
+          <div class="mode-meta">
+            <span class="mode-time">∞</span>
+            <span class="mode-reward">
+              <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"/></svg>
+              +20
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tab-content" id="shopTab">
+      <div class="shop">
+        <div class="shop-category">
+          <h2 class="category-title">Следы мышки</h2>
+          <div class="shop-grid" id="trailsShop"></div>
+        </div>
+
+        <div class="shop-category">
+          <h2 class="category-title">Цвета кнопок</h2>
+          <div class="shop-grid" id="colorsShop"></div>
+        </div>
+
+        <div class="shop-category">
+          <h2 class="category-title">Скины курсора</h2>
+          <div class="shop-grid" id="cursorsShop"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="game" id="game">
+    <div class="hud">
+      <div class="hud-item">
+        <div class="hud-label">Счёт</div>
+        <div class="hud-value score" id="score">0</div>
+      </div>
+      <div class="hud-item">
+        <div class="hud-label">Комбо</div>
+        <div class="hud-value combo" id="combo">x1</div>
+      </div>
+      <div class="hud-item">
+        <div class="hud-label">Монеты</div>
+        <div class="hud-value coins" id="coinsEarned">0</div>
+      </div>
+      <div class="hud-item">
+        <div class="hud-label">Время</div>
+        <div class="hud-value time" id="time">30</div>
+      </div>
+    </div>
+    <div class="time-bar">
+      <div class="time-bar-fill" id="timeBarFill"></div>
+    </div>
+    <div class="play-area" id="playArea"></div>
+  </div>
+
+  <div class="result" id="result">
+    <h2 class="result-title">Раунд завершён</h2>
+    <p class="result-subtitle">Вот твои результаты</p>
+    <div class="result-stats">
+      <div class="stat-card">
+        <div class="stat-label">Очки</div>
+        <div class="stat-value" id="finalScore">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Попаданий</div>
+        <div class="stat-value" id="finalHits">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Точность</div>
+        <div class="stat-value" id="finalAccuracy">0%</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Макс. комбо</div>
+        <div class="stat-value best" id="finalCombo">x1</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Монеты</div>
+        <div class="stat-value coins" id="finalCoins">0</div>
+      </div>
+    </div>
+    <div class="result-buttons">
+      <button class="btn" id="menuBtn">В меню</button>
+      <button class="btn primary" id="retryBtn">Ещё раз</button>
+    </div>
+  </div>
+</div>
+
+<div class="countdown" id="countdown">
+  <div class="countdown-number" id="countdownNumber">3</div>
+</div>
+
+<script>
+(() => {
+  // Generate stars
+  const starsContainer = document.getElementById('stars');
+  for (let i = 0; i < 80; i++) {
+    const star = document.createElement('div');
+    star.className = 'star';
+    star.style.left = Math.random() * 100 + '%';
+    star.style.top = Math.random() * 60 + '%';
+    star.style.animationDelay = Math.random() * 3 + 's';
+    star.style.animationDuration = (2 + Math.random() * 3) + 's';
+    const size = Math.random() * 2 + 1;
+    star.style.width = size + 'px';
+    star.style.height = size + 'px';
+    star.style.boxShadow = `0 0 ${size * 2}px rgba(255, 255, 255, 0.8)`;
+    starsContainer.appendChild(star);
+  }
+
+  const TRAILS = [
+    { id: 'none', name: 'Без следа', price: 0, color: 'transparent' },
+    { id: 'basic', name: 'Кремовый', price: 0, color: '#ffffff' },
+    { id: 'smoke', name: 'Дымный', price: 80, color: '#c8b8e8' },
+    { id: 'sage', name: 'Шалфей', price: 120, color: '#00ff88' },
+    { id: 'gold', name: 'Золотой', price: 180, color: '#ffe600' },
+    { id: 'terra', name: 'Терракот', price: 220, color: '#ff2d95' },
+    { id: 'indigo', name: 'Индиго', price: 280, color: '#a855f7' },
+    { id: 'rose', name: 'Пыльная роза', price: 350, color: '#ec4899' },
+    { id: 'cyan', name: 'Неон', price: 400, color: '#00f0ff' },
+    { id: 'lime', name: 'Лайм', price: 450, color: '#84cc16' },
+    { id: 'sunset', name: 'Закат', price: 500, color: '#ff6b00' },
+    { id: 'ocean', name: 'Океан', price: 550, color: '#0ea5e9' }
+  ];
+
+  const COLORS = [
+    { id: 'classic', name: 'Классик', price: 0, gradient: 'linear-gradient(135deg, #ffffff, #c8b8e8)' },
+    { id: 'sage', name: 'Шалфей', price: 100, gradient: 'linear-gradient(135deg, #00ff88, #008855)' },
+    { id: 'sunset', name: 'Закат', price: 150, gradient: 'linear-gradient(135deg, #ffe600, #ff2d95)' },
+    { id: 'indigo', name: 'Индиго', price: 180, gradient: 'linear-gradient(135deg, #a855f7, #6d28d9)' },
+    { id: 'rose', name: 'Пыльная роза', price: 220, gradient: 'linear-gradient(135deg, #ec4899, #be185d)' },
+    { id: 'graphite', name: 'Графит', price: 260, gradient: 'linear-gradient(135deg, #6b7280, #1f2937)' },
+    { id: 'sand', name: 'Песок', price: 300, gradient: 'linear-gradient(135deg, #d4c4a0, #a8956a)' },
+    { id: 'midnight', name: 'Полуночный', price: 400, gradient: 'linear-gradient(135deg, #4a5a8a, #1e293b)' },
+    { id: 'cyber', name: 'Кибер', price: 500, gradient: 'linear-gradient(135deg, #00f0ff, #0891b2)' },
+    { id: 'neon', name: 'Неон', price: 600, gradient: 'linear-gradient(135deg, #84cc16, #65a30d)' },
+    { id: 'lava', name: 'Лава', price: 700, gradient: 'linear-gradient(135deg, #ff6b00, #dc2626)' },
+    { id: 'aurora', name: 'Аврора', price: 800, gradient: 'linear-gradient(135deg, #a78bfa, #7c3aed, #00f0ff)' }
+  ];
+
+  const CURSORS = [
+    { id: 'default', name: 'Стандарт', price: 0, cursor: 'crosshair' },
+    { id: 'dot', name: 'Точка', price: 120, cursor: 'none' },
+    { id: 'ring', name: 'Кольцо', price: 180, cursor: 'none' },
+    { id: 'diamond', name: 'Ромб', price: 250, cursor: 'none' },
+    { id: 'plus', name: 'Плюс', price: 320, cursor: 'none' },
+    { id: 'arrow', name: 'Стрела', price: 400, cursor: 'none' },
+    { id: 'star', name: 'Звезда', price: 500, cursor: 'none' },
+    { id: 'hex', name: 'Гекс', price: 600, cursor: 'none' },
+    { id: 'target', name: 'Мишень', price: 700, cursor: 'none' }
+  ];
+
+  const MODES = {
+    easy: { time: 3000, spawnInterval: 1200, coinsPerHit: 5 },
+    medium: { time: 2000, spawnInterval: 900, coinsPerHit: 8 },
+    hard: { time: 1000, spawnInterval: 600, coinsPerHit: 12 },
+    moving: { time: 2500, spawnInterval: 1000, coinsPerHit: 15, moving: true },
+    multi: { time: 2000, spawnInterval: 1500, coinsPerHit: 10, multi: true },
+    boss: { time: 10000, spawnInterval: 10000, coinsPerHit: 20, boss: true }
+  };
+
+  const GAME_DURATION = 30;
+
+  let coins = parseInt(localStorage.getItem('aimCoins')) || 0;
+  let ownedItems = JSON.parse(localStorage.getItem('aimOwned')) || { trails: ['none', 'basic'], colors: ['classic'], cursors: ['default'] };
+  let selectedItems = JSON.parse(localStorage.getItem('aimSelected')) || { trail: 'basic', color: 'classic', cursor: 'default' };
+
+  const menu = document.getElementById('menu');
+  const game = document.getElementById('game');
+  const result = document.getElementById('result');
+  const playArea = document.getElementById('playArea');
+  const scoreEl = document.getElementById('score');
+  const comboEl = document.getElementById('combo');
+  const timeEl = document.getElementById('time');
+  const timeBarFill = document.getElementById('timeBarFill');
+  const coinsEarnedEl = document.getElementById('coinsEarned');
+  const countdown = document.getElementById('countdown');
+  const countdownNumber = document.getElementById('countdownNumber');
+  const coinsDisplay = document.getElementById('coinsDisplay');
+
+  let currentMode = null;
+  let score = 0, combo = 1, maxCombo = 1;
+  let hits = 0, misses = 0, totalClicks = 0, coinsEarned = 0;
+  let timeLeft = GAME_DURATION;
+  let gameRunning = false;
+  let gameTimer = null, spawnTimer = null;
+  let targetTimers = new Map();
+  let targetIdCounter = 0;
+  let bossHP = 0, bossMaxHP = 0, bossSpawnTimeout = null;
+
+  let audioCtx;
+  function initAudio() {
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  }
+
+  function playSound(freq, duration, type = 'sine', volume = 0.12) {
+    if (!audioCtx) return;
+    try {
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = type;
+      osc.frequency.value = freq;
+      gain.gain.setValueAtTime(volume, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start();
+      osc.stop(audioCtx.currentTime + duration);
+    } catch(e) {}
+  }
+
+  function playHitSound() {
+    const base = 500 + combo * 40;
+    playSound(base, 0.12, 'triangle', 0.15);
+    setTimeout(() => playSound(base * 1.5, 0.08, 'sine', 0.1), 30);
+  }
+
+  function playMissSound() { playSound(180, 0.15, 'sawtooth', 0.08); }
+  function playSpawnSound() { playSound(700, 0.04, 'sine', 0.04); }
+  function playCoinSound() {
+    playSound(900, 0.08, 'sine', 0.12);
+    setTimeout(() => playSound(1300, 0.08, 'sine', 0.12), 40);
+  }
+
+  function updateCoinsDisplay() { coinsDisplay.textContent = coins; }
+
+  document.querySelectorAll('.tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      tab.classList.add('active');
+      document.getElementById(tab.dataset.tab + 'Tab').classList.add('active');
+    });
+  });
+
+  document.querySelectorAll('.mode-card').forEach(card => {
+    card.addEventListener('mousemove', (e) => {
+      const rect = card.getBoundingClientRect();
+      const x = ((e.clientX - rect.left) / rect.width) * 100;
+      const y = ((e.clientY - rect.top) / rect.height) * 100;
+      card.style.setProperty('--mouse-x', x + '%');
+      card.style.setProperty('--mouse-y', y + '%');
+    });
+  });
+
+  function trailPreviewSVG(color) {
+    if (color === 'transparent') {
+      return `<svg width="48" height="48" viewBox="0 0 48 48"><line x1="8" y1="40" x2="40" y2="8" stroke="#9a78c8" stroke-width="1.5" stroke-dasharray="3 3"/></svg>`;
+    }
+    return `<svg width="48" height="48" viewBox="0 0 48 48">
+      <circle cx="10" cy="38" r="2.5" fill="${color}" opacity="0.3"/>
+      <circle cx="18" cy="30" r="3" fill="${color}" opacity="0.5"/>
+      <circle cx="26" cy="22" r="3.5" fill="${color}" opacity="0.7"/>
+      <circle cx="34" cy="14" r="4" fill="${color}" opacity="0.9"/>
+    </svg>`;
+  }
+
+  function colorPreviewStatic(gradient) {
+    return `<div style="width:48px;height:48px;border-radius:50%;background:${gradient};box-shadow:0 0 10px rgba(255,255,255,0.3);"></div>`;
+  }
+
+  function cursorPreviewSVG(id) {
+    const previews = {
+      default: `<svg width="32" height="32" viewBox="0 0 32 32"><line x1="16" y1="4" x2="16" y2="28" stroke="#00f0ff" stroke-width="1.5"/><line x1="4" y1="16" x2="28" y2="16" stroke="#00f0ff" stroke-width="1.5"/><circle cx="16" cy="16" r="2" fill="#ff2d95"/></svg>`,
+      dot: `<svg width="32" height="32" viewBox="0 0 32 32"><circle cx="16" cy="16" r="3" fill="#ff2d95"/></svg>`,
+      ring: `<svg width="32" height="32" viewBox="0 0 32 32"><circle cx="16" cy="16" r="8" fill="none" stroke="#00f0ff" stroke-width="1.5"/><circle cx="16" cy="16" r="1.5" fill="#ff2d95"/></svg>`,
+      diamond: `<svg width="32" height="32" viewBox="0 0 32 32"><path d="M16 6 L26 16 L16 26 L6 16 Z" fill="none" stroke="#00f0ff" stroke-width="1.5"/><circle cx="16" cy="16" r="1.5" fill="#ff2d95"/></svg>`,
+      plus: `<svg width="32" height="32" viewBox="0 0 32 32"><path d="M16 4 L16 28 M4 16 L28 16" stroke="#00f0ff" stroke-width="2" stroke-linecap="round"/><circle cx="16" cy="16" r="2" fill="#ff2d95"/></svg>`,
+      arrow: `<svg width="32" height="32" viewBox="0 0 32 32"><path d="M8 8 L8 24 L13 19 L17 26 L20 24 L16 17 L22 17 Z" fill="#ff2d95"/></svg>`,
+      star: `<svg width="32" height="32" viewBox="0 0 32 32"><path d="M16 4 L19 13 L28 13 L21 19 L24 28 L16 22 L8 28 L11 19 L4 13 L13 13 Z" fill="none" stroke="#ffe600" stroke-width="1.5"/></svg>`,
+      hex: `<svg width="32" height="32" viewBox="0 0 32 32"><path d="M16 4 L26 10 L26 22 L16 28 L6 22 L6 10 Z" fill="none" stroke="#00f0ff" stroke-width="1.5"/><circle cx="16" cy="16" r="2" fill="#ff2d95"/></svg>`,
+      target: `<svg width="32" height="32" viewBox="0 0 32 32"><circle cx="16" cy="16" r="10" fill="none" stroke="#00f0ff" stroke-width="1.5"/><circle cx="16" cy="16" r="6" fill="none" stroke="#ff2d95" stroke-width="1.5"/><circle cx="16" cy="16" r="2" fill="#ffe600"/></svg>`
+    };
+    return previews[id];
+  }
+
+  function renderShop() {
+    const trailsShop = document.getElementById('trailsShop');
+    const colorsShop = document.getElementById('colorsShop');
+    const cursorsShop = document.getElementById('cursorsShop');
+
+    trailsShop.innerHTML = TRAILS.map(item => {
+      const owned = ownedItems.trails.includes(item.id);
+      const selected = selectedItems.trail === item.id;
+      return `
+        <div class="shop-item ${owned ? 'owned' : ''} ${selected ? 'selected' : ''}" data-type="trail" data-id="${item.id}">
+          <div class="shop-item-icon">${trailPreviewSVG(item.color)}</div>
+          <div class="shop-item-name">${item.name}</div>
+          <div class="shop-item-price">${owned ? (selected ? 'Выбрано' : 'Выбрать') : `${item.price}`}</div>
+        </div>
+      `;
+    }).join('');
+
+    colorsShop.innerHTML = COLORS.map(item => {
+      const owned = ownedItems.colors.includes(item.id);
+      const selected = selectedItems.color === item.id;
+      return `
+        <div class="shop-item ${owned ? 'owned' : ''} ${selected ? 'selected' : ''}" data-type="color" data-id="${item.id}">
+          <div class="shop-item-icon">${colorPreviewStatic(item.gradient)}</div>
+          <div class="shop-item-name">${item.name}</div>
+          <div class="shop-item-price">${owned ? (selected ? 'Выбрано' : 'Выбрать') : `${item.price}`}</div>
+        </div>
+      `;
+    }).join('');
+
+    cursorsShop.innerHTML = CURSORS.map(item => {
+      const owned = ownedItems.cursors.includes(item.id);
+      const selected = selectedItems.cursor === item.id;
+      return `
+        <div class="shop-item ${owned ? 'owned' : ''} ${selected ? 'selected' : ''}" data-type="cursor" data-id="${item.id}">
+          <div class="shop-item-icon">${cursorPreviewSVG(item.id)}</div>
+          <div class="shop-item-name">${item.name}</div>
+          <div class="shop-item-price">${owned ? (selected ? 'Выбрано' : 'Выбрать') : `${item.price}`}</div>
+        </div>
+      `;
+    }).join('');
+
+    document.querySelectorAll('.shop-item').forEach(item => {
+      item.addEventListener('click', () => {
+        const type = item.dataset.type;
+        const id = item.dataset.id;
+        const items = type === 'trail' ? TRAILS : type === 'color' ? COLORS : CURSORS;
+        const itemData = items.find(i => i.id === id);
+        const key = type + 's';
+
+        if (ownedItems[key].includes(id)) {
+          selectedItems[type] = id;
+          localStorage.setItem('aimSelected', JSON.stringify(selectedItems));
+          renderShop();
+          playSound(700, 0.08, 'sine', 0.12);
+        } else {
+          if (coins >= itemData.price) {
+            coins -= itemData.price;
+            ownedItems[key].push(id);
+            localStorage.setItem('aimCoins', coins);
+            localStorage.setItem('aimOwned', JSON.stringify(ownedItems));
+            updateCoinsDisplay();
+            renderShop();
+            playCoinSound();
+          } else {
+            item.style.animation = 'shake 0.3s';
+            setTimeout(() => item.style.animation = '', 300);
+            playMissSound();
+          }
+        }
+      });
+    });
+  }
+
+  let cursorEl = null;
+  function createCursorElement() {
+    if (cursorEl) cursorEl.remove();
+    const cursor = CURSORS.find(c => c.id === selectedItems.cursor);
+    if (!cursor || cursor.id === 'default') return;
+
+    cursorEl = document.createElement('div');
+    cursorEl.style.cssText = `
+      position: fixed;
+      pointer-events: none;
+      z-index: 1000;
+      width: 32px;
+      height: 32px;
+      transform: translate(-50%, -50%);
+      transition: transform 0.05s;
+    `;
+    cursorEl.innerHTML = cursorPreviewSVG(cursor.id);
+    document.body.appendChild(cursorEl);
+  }
+
+  document.addEventListener('mousemove', (e) => {
+    if (cursorEl) {
+      cursorEl.style.left = e.clientX + 'px';
+      cursorEl.style.top = e.clientY + 'px';
+    }
+  });
+
+  let lastTrailTime = 0;
+  playArea.addEventListener('mousemove', (e) => {
+    if (!gameRunning) return;
+    const now = Date.now();
+    if (now - lastTrailTime < 35) return;
+    lastTrailTime = now;
+
+    const trail = TRAILS.find(t => t.id === selectedItems.trail);
+    if (!trail || trail.id === 'none') return;
+
+    const dot = document.createElement('div');
+    dot.className = 'trail-dot';
+    const areaRect = playArea.getBoundingClientRect();
+    const x = e.clientX - areaRect.left;
+    const y = e.clientY - areaRect.top;
+
+    dot.style.left = x + 'px';
+    dot.style.top = y + 'px';
+    dot.style.width = '12px';
+    dot.style.height = '12px';
+    dot.style.background = trail.color;
+    dot.style.boxShadow = `0 0 12px ${trail.color}`;
+
+    playArea.appendChild(dot);
+    setTimeout(() => dot.remove(), 600);
+  });
+
+  function applyCursor() {
+    const cursor = CURSORS.find(c => c.id === selectedItems.cursor);
+    if (cursor) {
+      playArea.style.cursor = cursor.cursor;
+      createCursorElement();
+    }
+  }
+
+  document.querySelectorAll('.mode-card').forEach(card => {
+    card.addEventListener('click', () => {
+      initAudio();
+      currentMode = card.dataset.mode;
+      startCountdown();
+    });
+  });
+
+  document.getElementById('menuBtn').addEventListener('click', () => {
+    result.classList.remove('active');
+    menu.style.display = 'block';
+    if (cursorEl) cursorEl.remove();
+    cursorEl = null;
+  });
+
+  document.getElementById('retryBtn').addEventListener('click', () => {
+    result.classList.remove('active');
+    startCountdown();
+  });
+
+  function startCountdown() {
+    menu.style.display = 'none';
+    result.classList.remove('active');
+    countdown.classList.add('active');
+    let count = 3;
+    countdownNumber.textContent = count;
+    countdownNumber.style.animation = 'none';
+    void countdownNumber.offsetWidth;
+    countdownNumber.style.animation = 'countPulse 1s ease-out';
+    playSound(500, 0.1, 'sine', 0.15);
+
+    const countInterval = setInterval(() => {
+      count--;
+      if (count > 0) {
+        countdownNumber.textContent = count;
+        countdownNumber.style.animation = 'none';
+        void countdownNumber.offsetWidth;
+        countdownNumber.style.animation = 'countPulse 1s ease-out';
+        playSound(500, 0.1, 'sine', 0.15);
+      } else {
+        countdownNumber.textContent = 'GO';
+        countdownNumber.style.animation = 'none';
+        void countdownNumber.offsetWidth;
+        countdownNumber.style.animation = 'countPulse 1s ease-out';
+        playSound(900, 0.15, 'triangle', 0.2);
+        clearInterval(countInterval);
+        setTimeout(() => {
+          countdown.classList.remove('active');
+          startGame();
+        }, 500);
+      }
+    }, 1000);
+  }
+
+  function startGame() {
+    game.classList.add('active');
+    playArea.innerHTML = '';
+    score = 0; combo = 1; maxCombo = 1;
+    hits = 0; misses = 0; totalClicks = 0; coinsEarned = 0;
+    timeLeft = GAME_DURATION;
+    gameRunning = true;
+    bossHP = 0; bossMaxHP = 0;
+    targetTimers.clear();
+
+    applyCursor();
+    updateHUD();
+
+    const startTime = Date.now();
+    gameTimer = setInterval(() => {
+      const elapsed = (Date.now() - startTime) / 1000;
+      timeLeft = Math.max(0, GAME_DURATION - elapsed);
+      timeEl.textContent = Math.ceil(timeLeft);
+      timeBarFill.style.width = (timeLeft / GAME_DURATION * 100) + '%';
+      if (timeLeft <= 0) endGame();
+    }, 50);
+
+    if (MODES[currentMode].boss) {
+      spawnBoss();
+    } else {
+      spawnTarget();
+      spawnTimer = setInterval(spawnTarget, MODES[currentMode].spawnInterval);
+    }
+  }
+
+  function spawnTarget() {
+    if (!gameRunning) return;
+    const mode = MODES[currentMode];
+
+    if (mode.multi) {
+      for (let i = 0; i < 3; i++) {
+        setTimeout(() => {
+          if (gameRunning) createTarget(mode.moving);
+        }, i * 200);
+      }
+    } else {
+      createTarget(mode.moving);
+    }
+  }
+
+  function createTarget(moving = false) {
+    const target = document.createElement('div');
+    target.className = 'target';
+    const id = ++targetIdCounter;
+    target.dataset.id = id;
+
+    const padding = 60;
+    const area = playArea.getBoundingClientRect();
+    const maxX = area.width - padding * 2;
+    const maxY = area.height - padding * 2 - 120;
+    const x = padding + Math.random() * maxX;
+    const y = padding + 120 + Math.random() * maxY;
+
+    target.style.left = x + 'px';
+    target.style.top = y + 'px';
+
+    const color = COLORS.find(c => c.id === selectedItems.color);
+    const circumference = 2 * Math.PI * 38;
+    target.innerHTML = `
+      <div class="target-inner" style="background: ${color.gradient}"></div>
+      <div class="target-timer">
+        <svg viewBox="0 0 80 80">
+          <circle cx="40" cy="40" r="38"
+            stroke-dasharray="${circumference}"
+            stroke-dashoffset="0"></circle>
+        </svg>
+      </div>
+    `;
+
+    playArea.appendChild(target);
+    playSpawnSound();
+
+    const circle = target.querySelector('circle');
+    const targetTime = MODES[currentMode].time;
+    const startTime = Date.now();
+    let moveInterval = null;
+
+    if (moving) {
+      moveInterval = setInterval(() => {
+        if (!gameRunning || target.classList.contains('hit') || target.classList.contains('missed')) {
+          clearInterval(moveInterval);
+          return;
+        }
+        const newX = padding + Math.random() * maxX;
+        const newY = padding + 120 + Math.random() * maxY;
+        target.style.transition = 'left 0.3s ease, top 0.3s ease';
+        target.style.left = newX + 'px';
+        target.style.top = newY + 'px';
+      }, 500);
+    }
+
+    const timerInterval = setInterval(() => {
+      if (!gameRunning) {
+        clearInterval(timerInterval);
+        if (moveInterval) clearInterval(moveInterval);
+        return;
+      }
+      const elapsed = Date.now() - startTime;
+      const progress = Math.min(1, elapsed / targetTime);
+      circle.style.strokeDashoffset = circumference * progress;
+
+      if (progress > 0.7) target.classList.add('expiring');
+
+      if (elapsed >= targetTime) {
+        clearInterval(timerInterval);
+        if (moveInterval) clearInterval(moveInterval);
+        missTarget(target, id);
+      }
+    }, 30);
+
+    targetTimers.set(id, { timer: timerInterval, move: moveInterval });
+
+    target.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (!gameRunning) return;
+      if (target.classList.contains('hit') || target.classList.contains('missed')) return;
+      hitTarget(target, id, e);
+    });
+  }
+
+  function spawnBoss() {
+    if (!gameRunning) return;
+
+    const target = document.createElement('div');
+    target.className = 'target';
+    const id = ++targetIdCounter;
+    target.dataset.id = id;
+    target.style.width = '150px';
+    target.style.height = '150px';
+
+    const area = playArea.getBoundingClientRect();
+    target.style.left = area.width / 2 + 'px';
+    target.style.top = area.height / 2 + 'px';
+
+    bossMaxHP = 20;
+    bossHP = bossMaxHP;
+
+    const color = COLORS.find(c => c.id === selectedItems.color);
+    target.innerHTML = `
+      <div class="target-inner" style="background: ${color.gradient}">
+        <div class="boss-hp-wrap" style="position: absolute; bottom: -28px; left: 50%; transform: translateX(-50%); width: 120px; height: 4px; background: rgba(255,255,255,0.1); border-radius: 2px; overflow: hidden; border: 1px solid var(--border);">
+          <div class="boss-hp-bar" style="width: 100%; height: 100%; background: linear-gradient(90deg, var(--accent-hard), var(--accent-medium)); transition: width 0.2s; box-shadow: 0 0 10px var(--accent-hard);"></div>
+        </div>
+        <div class="boss-hp-text" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-family: 'Orbitron', sans-serif; font-size: 2rem; font-weight: 700; color: #fff; text-shadow: 0 0 15px rgba(255, 45, 149, 0.8), 0 2px 8px rgba(0,0,0,0.8);">${bossHP}</div>
+      </div>
+    `;
+
+    playArea.appendChild(target);
+    playSpawnSound();
+
+    target.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (!gameRunning) return;
+      if (target.classList.contains('hit')) return;
+
+      bossHP--;
+      const hpBar = target.querySelector('.boss-hp-bar');
+      const hpText = target.querySelector('.boss-hp-text');
+      if (hpBar) hpBar.style.width = (bossHP / bossMaxHP * 100) + '%';
+      if (hpText) hpText.textContent = bossHP;
+
+      const rect = target.getBoundingClientRect();
+      const areaRect = playArea.getBoundingClientRect();
+      const cx = rect.left + rect.width / 2 - areaRect.left;
+      const cy = rect.top + rect.height / 2 - areaRect.top;
+
+      spawnParticles(cx, cy);
+      playSound(400 + bossHP * 15, 0.08, 'square', 0.1);
+
+      if (bossHP <= 0) {
+        target.classList.add('hit');
+        hits++;
+        score += 500;
+        coinsEarned += MODES[currentMode].coinsPerHit;
+
+        showFloatingScore(cx, cy, '+500', true);
+        setTimeout(() => showFloatingScore(cx + 50, cy, '+' + MODES[currentMode].coinsPerHit, true), 100);
+        playHitSound();
+        playCoinSound();
+
+        updateHUD();
+
+        setTimeout(() => {
+          if (target.parentNode) target.remove();
+          if (gameRunning) bossSpawnTimeout = setTimeout(spawnBoss, 800);
+        }, 350);
+      }
+    });
+  }
+
+  function hitTarget(target, id) {
+    const timerData = targetTimers.get(id);
+    if (timerData) {
+      clearInterval(timerData.timer);
+      if (timerData.move) clearInterval(timerData.move);
+      targetTimers.delete(id);
+    }
+
+    target.classList.add('hit');
+    hits++;
+
+    const points = 100 * combo;
+    const coinsReward = MODES[currentMode].coinsPerHit;
+    score += points;
+    coinsEarned += coinsReward;
+    combo++;
+    if (combo > maxCombo) maxCombo = combo;
+
+    const rect = target.getBoundingClientRect();
+    const areaRect = playArea.getBoundingClientRect();
+    const cx = rect.left + rect.width / 2 - areaRect.left;
+    const cy = rect.top + rect.height / 2 - areaRect.top;
+
+    showFloatingScore(cx, cy, '+' + points, true);
+    setTimeout(() => showFloatingScore(cx + 50, cy, '+' + coinsReward, true), 100);
+    spawnParticles(cx, cy);
+    playHitSound();
+    playCoinSound();
+
+    updateHUD();
+
+    setTimeout(() => {
+      if (target.parentNode) target.remove();
+    }, 350);
+  }
+
+  function missTarget(target, id) {
+    const timerData = targetTimers.get(id);
+    if (timerData) {
+      clearInterval(timerData.timer);
+      if (timerData.move) clearInterval(timerData.move);
+      targetTimers.delete(id);
+    }
+    target.classList.add('missed');
+    misses++;
+    combo = 1;
+
+    const rect = target.getBoundingClientRect();
+    const areaRect = playArea.getBoundingClientRect();
+    const cx = rect.left + rect.width / 2 - areaRect.left;
+    const cy = rect.top + rect.height / 2 - areaRect.top;
+
+    showFloatingScore(cx, cy, 'промах', false);
+    playMissSound();
+    updateHUD();
+
+    setTimeout(() => {
+      if (target.parentNode) target.remove();
+    }, 350);
+  }
+
+  playArea.addEventListener('click', (e) => {
+    if (!gameRunning) return;
+    if (e.target === playArea) {
+      totalClicks++;
+      combo = 1;
+
+      const areaRect = playArea.getBoundingClientRect();
+      const x = e.clientX - areaRect.left;
+      const y = e.clientY - areaRect.top;
+
+      const flash = document.createElement('div');
+      flash.className = 'miss-flash';
+      flash.style.setProperty('--x', x + 'px');
+      flash.style.setProperty('--y', y + 'px');
+      playArea.appendChild(flash);
+      setTimeout(() => flash.remove(), 300);
+
+      playMissSound();
+      updateHUD();
+    }
+  });
+
+  function showFloatingScore(x, y, text, positive) {
+    const el = document.createElement('div');
+    el.className = 'float-score ' + (positive ? 'positive' : 'negative');
+    el.textContent = text;
+    el.style.left = x + 'px';
+    el.style.top = y + 'px';
+    playArea.appendChild(el);
+    setTimeout(() => el.remove(), 800);
+  }
+
+  function spawnParticles(x, y) {
+    const particleColors = ['#ff2d95', '#00f0ff', '#ffe600', '#a855f7', '#ff6b00', '#00ff88', '#ffffff'];
+    for (let i = 0; i < 12; i++) {
+      const p = document.createElement('div');
+      p.className = 'particle';
+      const color = particleColors[Math.floor(Math.random() * particleColors.length)];
+      p.style.left = x + 'px';
+      p.style.top = y + 'px';
+      p.style.background = color;
+      p.style.color = color;
+      const angle = (Math.PI * 2 * i) / 12 + Math.random() * 0.5;
+      const dist = 60 + Math.random() * 40;
+      p.style.setProperty('--tx', Math.cos(angle) * dist + 'px');
+      p.style.setProperty('--ty', Math.sin(angle) * dist + 'px');
+      playArea.appendChild(p);
+      setTimeout(() => p.remove(), 500);
+    }
+  }
+
+  function updateHUD() {
+    scoreEl.textContent = score;
+    comboEl.textContent = 'x' + combo;
+    coinsEarnedEl.textContent = coinsEarned;
+
+    if (combo >= 5) {
+      comboEl.style.color = 'var(--accent-hard)';
+    } else if (combo >= 3) {
+      comboEl.style.color = 'var(--accent-medium)';
+    } else {
+      comboEl.style.color = 'var(--accent-medium)';
+    }
+  }
+
+  function endGame() {
+    gameRunning = false;
+    clearInterval(gameTimer);
+    clearInterval(spawnTimer);
+    if (bossSpawnTimeout) clearTimeout(bossSpawnTimeout);
+    targetTimers.forEach(t => {
+      clearInterval(t.timer);
+      if (t.move) clearInterval(t.move);
+    });
+    targetTimers.clear();
+
+    if (cursorEl) { cursorEl.remove(); cursorEl = null; }
+
+    setTimeout(() => {
+      game.classList.remove('active');
+      playArea.innerHTML = '';
+
+      coins += coinsEarned;
+      localStorage.setItem('aimCoins', coins);
+      updateCoinsDisplay();
+
+      const total = hits + misses;
+      const accuracy = total > 0 ? Math.round(hits / total * 100) : 0;
+
+      document.getElementById('finalScore').textContent = score;
+      document.getElementById('finalHits').textContent = hits;
+      document.getElementById('finalAccuracy').textContent = accuracy + '%';
+      document.getElementById('finalCombo').textContent = 'x' + maxCombo;
+      document.getElementById('finalCoins').textContent = coinsEarned;
+
+      result.classList.add('active');
+    }, 500);
+  }
+
+  updateCoinsDisplay();
+  renderShop();
+})();
+</script>
+
+</body>
+</html>
